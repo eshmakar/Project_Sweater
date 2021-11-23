@@ -20,14 +20,14 @@ public class User implements UserDetails {
     private String email;
     private String activationCode;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER) //(формирует дополнительную таблицу для хранения enum) используется,  если коллекция должна быть отображена с помощью таблицы коллекций
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id")) //означает, что таблица ролей будет соединятся с текущий таблицы через user_id (то есть связываются таблицы)
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    //(формирует дополнительную таблицу для хранения enum) используется,  если коллекция должна быть отображена с помощью таблицы коллекций
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+    //означает, что таблица ролей будет соединятся с текущий таблицы через user_id (то есть связываются таблицы)
     @Enumerated(EnumType.STRING) //сообщаем, что enum надо хранить в виде строки
     private Set<Role> roles;
 
-    public boolean isAdmin(){
-        return roles.contains(Role.ADMIN);
-    }
+    public boolean isAdmin() { return roles.contains(Role.ADMIN); }
 
     public Long getId() {
         return id;
@@ -41,33 +41,8 @@ public class User implements UserDetails {
         return username;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isActive();
-    }
-
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
     }
 
     public String getPassword() {
@@ -94,19 +69,37 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public String getEmail() {
-        return email;
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public String getActivationCode() { return activationCode; }
+
+    public void setActivationCode(String activationCode) { this.activationCode = activationCode; }
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public String getActivationCode() {
-        return activationCode;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive();
     }
 }

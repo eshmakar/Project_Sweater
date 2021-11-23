@@ -50,8 +50,8 @@ public class MainController {
             @AuthenticationPrincipal User user,
             @RequestParam String text,
             @RequestParam String tag, Map<String, Object> model,
-            @RequestParam("file") MultipartFile file //Представление загруженного файла
-    ) throws IOException {
+            @RequestParam("file") MultipartFile file ) throws IOException {//Представление загруженного файла
+
         Message message = new Message(text, tag, user);
 
         if (file != null && !file.getOriginalFilename().isEmpty()){
@@ -66,26 +66,26 @@ public class MainController {
             message.setFilename(resultFilename);
         }
 
-
         messageRepo.save(message);
+
         Iterable<Message> allMessages = messageRepo.findAll();
         model.put("messages", allMessages);
         model.put("filter", "");
         return "main";
     }
 
-    @PostMapping("remove")
-    public String removeById(@RequestParam int remove, Map<String, Object> model) {
-        Optional<Message> byId = messageRepo.findById(remove);
-        if (!byId.isPresent()) {
-            model.put("remove", remove);
-            return "not_exist";
-        } else {
-            messageRepo.deleteById(remove);
-            Iterable<Message> allMessages = messageRepo.findAll();
-            model.put("messages", allMessages);
-            return "redirect:/main";
-        }
-    }
+//    @PostMapping("remove")
+//    public String removeById(@RequestParam int remove, Map<String, Object> model) {
+//        Optional<Message> byId = messageRepo.findById(remove);
+//        if (!byId.isPresent()) {
+//            model.put("remove", remove);
+//            return "not_exist";
+//        } else {
+//            messageRepo.deleteById(remove);
+//            Iterable<Message> allMessages = messageRepo.findAll();
+//            model.put("messages", allMessages);
+//            return "redirect:/main";
+//        }
+//    }
 
 }
