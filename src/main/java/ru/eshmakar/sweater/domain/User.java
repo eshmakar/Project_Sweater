@@ -4,6 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
 
@@ -11,23 +13,30 @@ import java.util.Set;
 @Table(name = "usr")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    @NotBlank(message = "Username cannot be empty")
     private String username;
+    @NotBlank(message = "Password cannot be empty")
     private String password;
+    @Transient
+    @NotBlank(message = "Password confirmation cannot be empty")
+    private String password2;
     private boolean active;
+
+    @Email(message = "Email is not correct")
+    @NotBlank(message = "Email cannot be empty")
     private String email;
     private String activationCode;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    //(формирует дополнительную таблицу для хранения enum) используется,  если коллекция должна быть отображена с помощью таблицы коллекций
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-    //означает, что таблица ролей будет соединятся с текущий таблицы через user_id (то есть связываются таблицы)
-    @Enumerated(EnumType.STRING) //сообщаем, что enum надо хранить в виде строки
+    @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    public boolean isAdmin() { return roles.contains(Role.ADMIN); }
+    public boolean isAdmin() {
+        return roles.contains(Role.ADMIN);
+    }
 
     public Long getId() {
         return id;
@@ -41,8 +50,33 @@ public class User implements UserDetails {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive();
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
     }
 
     public String getPassword() {
@@ -69,37 +103,27 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public String getEmail() { return email; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public String getActivationCode() { return activationCode; }
-
-    public void setActivationCode(String activationCode) { this.activationCode = activationCode; }
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+    public String getEmail() {
+        return email;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
+    public String getActivationCode() {
+        return activationCode;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return isActive();
+    public String getPassword2() {
+        return password2;
+    }
+
+    public void setPassword2(String password2) {
+        this.password2 = password2;
     }
 }
