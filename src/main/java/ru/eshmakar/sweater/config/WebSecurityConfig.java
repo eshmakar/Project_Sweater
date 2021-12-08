@@ -38,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/login") //указываем, что логин форма находится по такому адресу
                     .permitAll() //разрешаем этим пользоваться всем
                 .and()
+                    .rememberMe()
+                .and()
                     .logout() //разрешаем выход из системы
                     .permitAll(); //разрешаем этим пользоваться всем
     }
